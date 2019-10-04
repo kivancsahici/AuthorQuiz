@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import AuthorQuiz from './AuthorQuiz';
+import AddAuthorForm from './AddAuthorForm';
 import * as serviceWorker from './serviceWorker';
 import {shuffle, sample} from 'underscore';
 import {BrowserRouter, Route} from 'react-router-dom';
@@ -77,24 +78,21 @@ function App(){
   return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected}/>;
 }
 
-function AddAuthorForm({match}){
-  return <div>
-    <h1>Add Author</h1>
-    <p>{JSON.stringify(match)}</p>
-  </div>
-}
-
 function onAnswerSelected(answer) {
   const isCorrect = state.turnData.author.books.some((book) => book === answer);
   state.highlight = isCorrect ? 'correct' : 'wrong';
   render();
 }
 
+function AuthorWrapper(){
+  return <AddAuthorForm onAddAuthor={console.log}/>
+}
+
 function render() {
   ReactDOM.render(<BrowserRouter>
       <React.Fragment>
         <Route exact path="/" component={App}/>
-        <Route path="/add" component={AddAuthorForm}/>
+        <Route path="/add" component={AuthorWrapper}/>
       </React.Fragment>
   </BrowserRouter>, document.getElementById('root'));
 }
