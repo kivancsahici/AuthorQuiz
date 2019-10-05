@@ -5,7 +5,7 @@ import AuthorQuiz from './AuthorQuiz';
 import AddAuthorForm from './AddAuthorForm';
 import * as serviceWorker from './serviceWorker';
 import {shuffle, sample} from 'underscore';
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, Route, withRouter} from 'react-router-dom';
 
 const authors = [
     {
@@ -61,21 +61,29 @@ const authors = [
       author: authors.find((author) =>
         author.books.some((title) => title===answer)
       )
-    }
+     }
   }
 
-const state = {
-    turnData: getTurnData(authors),
-    highlight: ''
-  /* 
-    turnData:{
-        author: authors[0],
-        books: authors[0].books
-    }*/
-};
+
+function resetState() {
+  return {
+    
+      turnData: getTurnData(authors),
+      highlight: ''
+  
+  };
+}
+
+let state = resetState();
+
 
 function App(){
-  return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected}/>;
+  return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected}
+  onContinue={() => {
+    state = resetState();
+    render();
+  }}
+  />;
 }
 
 function onAnswerSelected(answer) {
@@ -84,9 +92,12 @@ function onAnswerSelected(answer) {
   render();
 }
 
-function AuthorWrapper(){
-  return <AddAuthorForm onAddAuthor={console.log}/>
-}
+const AuthorWrapper = withRouter(({history}) => {
+  return <AddAuthorForm onAddAuthor={(author) => {
+      authors.push(author);
+      history.push('/');
+  }} />;
+});
 
 function render() {
   ReactDOM.render(<BrowserRouter>
